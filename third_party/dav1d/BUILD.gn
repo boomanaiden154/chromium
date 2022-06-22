@@ -6,6 +6,7 @@ import("dav1d_generated.gni")
 
 import("//build/config/compiler/compiler.gni")
 import("//build/config/sanitizers/sanitizers.gni")
+import("//build/config/clang/clang.gni")
 import("//third_party/nasm/nasm_assemble.gni")
 
 # MemorySanitizer can't handle assembly, https://crbug.com/928357.
@@ -28,7 +29,7 @@ if (is_win) {
 # the stack alignment, so we must use the platform's default alignment in those
 # cases; https://crbug.com/928743.
 if (current_cpu == "x86" || current_cpu == "x64") {
-  if (use_thin_lto || is_win) {
+  if (use_thin_lto || is_win || enable_bitcode) {
     needs_stack_alignment = false
     # The defaults are stack_alignment=4 for x86 and stack_alignment=16 for x64.
   } else {

@@ -519,7 +519,7 @@ config("compiler") {
     ldflags += [ "-Wl,-z,keep-text-section-prefix" ]
   }
 
-  if (is_clang && !is_nacl && current_os != "zos") {
+  if (is_clang && !is_nacl && current_os != "zos" && !enable_bitcode) {
     cflags += [ "-fcrash-diagnostics-dir=" + clang_diagnostic_dir ]
 
     # TODO(hans): Remove this once Clang generates better optimized debug info
@@ -1985,7 +1985,7 @@ if (is_win) {
         "-Wl,-no_function_starts",
       ]
     }
-  } else if (current_os != "aix" && current_os != "zos") {
+  } else if (current_os != "aix" && current_os != "zos" && !enable_bitcode) {
     # Non-Mac Posix flags.
     # Aix does not support these.
 
@@ -2344,7 +2344,7 @@ config("symbols") {
     }
 
     if (!is_nacl && is_clang && !is_tsan && !is_asan &&
-        !(is_ios && enable_ios_bitcode)) {
+        !(is_ios && enable_ios_bitcode) && !enable_bitcode) {
       # gcc generates dwarf-aranges by default on -g1 and -g2. On clang it has
       # to be manually enabled.
       #
@@ -2386,7 +2386,7 @@ config("symbols") {
         !(is_android && !use_debug_fission && current_cpu != "x64" &&
           current_cpu != "arm64")
     if (_enable_gdb_index) {
-      if (is_clang) {
+      if (is_clang && !enable_bitcode) {
         # This flag enables the GNU-format pubnames and pubtypes sections,
         # which lld needs in order to generate a correct GDB index.
         # TODO(pcc): Try to make lld understand non-GNU-format pubnames
@@ -2469,7 +2469,7 @@ config("minimal_symbols") {
     }
 
     if (!is_nacl && is_clang && !is_tsan && !is_asan &&
-        !(is_ios && enable_ios_bitcode)) {
+        !(is_ios && enable_ios_bitcode && !enable_bitcode)) {
       # See comment for -gdwarf-aranges in config("symbols").
       cflags += [ "-gdwarf-aranges" ]
     }

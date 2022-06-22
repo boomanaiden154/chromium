@@ -15,4 +15,8 @@ declare_args() {
       default_toolchain != "//build/toolchain/cros:target"
 
   clang_base_path = default_clang_base_path
+
+  # Indicates whether or not LLVM bitcode should be embedded within the
+  # output object files.
+  enable_bitcode = false
 }
